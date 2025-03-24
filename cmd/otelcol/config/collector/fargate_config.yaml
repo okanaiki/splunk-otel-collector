@@ -45,6 +45,22 @@ receivers:
     # Whether to preserve incoming access token and use instead of exporter token
     # default = false
     #access_token_passthrough: true
+  statsd:
+    endpoint: "localhost:8125"
+    aggregation_interval: 60s
+    enable_metric_type: false
+    is_monotonic_counter: false
+    timer_histogram_mapping:
+      - statsd_type: "histogram"
+        observer_type: "histogram"
+        histogram:
+          max_size: 50
+      - statsd_type: "distribution"
+        observer_type: "histogram"
+        histogram: 
+          max_size: 50    
+      - statsd_type: "timing"
+        observer_type: "summary"
   zipkin:
     endpoint: 0.0.0.0:9411
   awsecscontainermetrics:
@@ -110,7 +126,7 @@ service:
         #- resource/add_environment
       exporters: [otlphttp, signalfx]
     metrics:
-      receivers: [otlp, signalfx, awsecscontainermetrics, prometheus/internal]
+      receivers: [otlp, signalfx, awsecscontainermetrics, prometheus/internal, statsd]
       processors: [memory_limiter, batch, resourcedetection]
       exporters: [signalfx]
     logs:
